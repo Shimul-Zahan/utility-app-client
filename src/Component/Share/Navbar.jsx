@@ -5,7 +5,9 @@ const Navbar = () => {
     <div>
       <div className="navbar bg-black text-white px-10">
         <div className="flex-1">
-          <Link to="/" className="btn btn-ghost text-xl">LOGO</Link>
+          <Link to="/" className="btn btn-ghost text-xl">
+            LOGO
+          </Link>
         </div>
         <div className="flex-none ">
           <ul className="menu menu-horizontal px-1">

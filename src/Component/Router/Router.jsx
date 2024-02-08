@@ -9,6 +9,7 @@ import UpdateProfile from "../Authentication/UpdateProfile/UpdateProfile";
 import Converter from "../Page/Widgets/Converter/Converter";
 import Calender from "../Page/Widgets/Calender/Calender";
 import Note from "../Page/Widgets/Note/Note";
+import AddNote from "../Page/Widgets/Note/AddNote/AddNote";
 
 export const router = createBrowserRouter([
   {
@@ -50,6 +51,10 @@ export const router = createBrowserRouter([
       {
         path: "/Notes",
         element: <Note />,
+      },
+      {
+        path: "/Notes/addNote",
+        element: <AddNote />,
       },
     ],
   },
