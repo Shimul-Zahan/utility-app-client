@@ -17,7 +17,7 @@ const Note = () => {
             <h2 className="text-2xl font-semibold text-white">Card title!</h2>
             <p className="text-white font-medium">05 February 2024</p>
             <div className="card-actions justify-center mt-5">
-              <Link to="">
+              <Link to="/Notes/viewNote">
                 <button className="btn btn-primary text-white">View</button>
               </Link>
               <Link to="">

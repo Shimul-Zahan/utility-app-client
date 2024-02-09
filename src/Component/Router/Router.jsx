@@ -10,6 +10,8 @@ import Converter from "../Page/Widgets/Converter/Converter";
 import Calender from "../Page/Widgets/Calender/Calender";
 import Note from "../Page/Widgets/Note/Note";
 import AddNote from "../Page/Widgets/Note/AddNote/AddNote";
+import ViewNote from "../Page/Widgets/Note/ViewNote/ViewNote";
+import AddTask from "../Page/Widgets/Note/AddTask/AddTask";
 
 export const router = createBrowserRouter([
   {
@@ -55,6 +57,14 @@ export const router = createBrowserRouter([
       {
         path: "/Notes/addNote",
         element: <AddNote />,
+      },
+      {
+        path: "/Notes/viewNote",
+        element: <ViewNote />,
+      },
+      {
+        path: "/Notes/addTask",
+        element: <AddTask />,
       },
     ],
   },
