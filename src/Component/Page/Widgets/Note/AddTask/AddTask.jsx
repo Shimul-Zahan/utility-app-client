@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAllContext } from "../../../../Context/AllContext";
+import { message } from "antd";
 
 const AddTask = () => {
   const [task, setTask] = useState("");
@@ -27,6 +28,7 @@ const AddTask = () => {
 
   const handleSaveTask = () => {
     setAllTask(taskList); // Update the allTask array with the taskList data
+    message.success("Task Added Successful!");
     setTaskList([]); // Clear the taskList array
   };
   
