@@ -12,6 +12,7 @@ import Note from "../Page/Widgets/Note/Note";
 import AddNote from "../Page/Widgets/Note/AddNote/AddNote";
 import ViewNote from "../Page/Widgets/Note/ViewNote/ViewNote";
 import AddTask from "../Page/Widgets/Note/AddTask/AddTask";
+import AdminPage from "../Page/Admin/AdminPage";
 
 export const router = createBrowserRouter([
   {
@@ -65,6 +66,10 @@ export const router = createBrowserRouter([
       {
         path: "/Notes/addTask",
         element: <AddTask />,
+      },
+      {
+        path: "/adminpage",
+        element: <AdminPage />,
       },
     ],
   },
