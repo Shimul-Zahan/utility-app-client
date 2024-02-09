@@ -4,7 +4,8 @@ import { useAllContext } from "../../../../Context/AllContext";
 
 const AddTask = () => {
   const [task, setTask] = useState("");
-  const { allTask, setAllTask } = useAllContext();
+  const [taskList,setTaskList] = useState([])
+  const { setAllTask } = useAllContext();
 
   const onChangeTask = (val) => {
     setTask(val);
@@ -13,19 +14,23 @@ const AddTask = () => {
   const handleAddTask = () => {
     if (task.trim() !== "") {
       // Make sure the task is not empty
-      setAllTask([...allTask, task]); // Add the new task to the existing tasks
+      setTaskList([...taskList, task]); // Add the new task to the existing tasks
       setTask(""); // Clear the input field after adding the task
     }
   };
 
   const handleRemoveTask = (index) => {
-    const updatedTasks = [...allTask];
+    const updatedTasks = [...taskList];
     updatedTasks.splice(index, 1);
-    setAllTask(updatedTasks);
+    setTaskList(updatedTasks);
   };
 
+  const handleSaveTask = () => {
+    setAllTask(taskList); // Update the allTask array with the taskList data
+    setTaskList([]); // Clear the taskList array
+  };
   
-  console.log(allTask);
+  console.log(taskList);
   return (
     <>
       <div className="mx-20 mt-16 mb-52 ">
@@ -60,7 +65,7 @@ const AddTask = () => {
               >
                 Add Task +
               </button>
-              <button className="btn btn-success text-white font-semibold">
+              <button className="btn btn-success text-white font-semibold" onClick={handleSaveTask}>
                 Save Task +
               </button>
               <Link to="/Notes/viewNote">
@@ -75,7 +80,7 @@ const AddTask = () => {
               All Task
             </h1>
             <ul className="mx-5">
-              {allTask.map((task, index) => (
+              {taskList.map((task, index) => (
                 <li key={index}>
                   <div className="flex justify-between items-center space-y-2">
                     <h1 className="text-xl font-semibold">{task}</h1>
