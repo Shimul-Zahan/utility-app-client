@@ -60,7 +60,7 @@ const Login = () => {
 						]}
 					>
 						<Input.Password
-							className='py-2 text-center password-input bg-[#a5a5a5] border-4 rounded-none border-[#434343] text-white font-medium'
+							className='py-2 text-center password-input bg-[#a5a5a5] border-4 rounded-none border-[#434343] text-white font-medium signup-password'
 							placeholder='Enter your password'
 						/>
 					</Form.Item>

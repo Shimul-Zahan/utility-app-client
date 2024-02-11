@@ -18,7 +18,9 @@ const Navbar = () => {
 									here!
 								</NavLink>
 								Not yet a member?
-								<a className='link link-primary text-white'>Join us now!</a>
+								<NavLink to='/signup' className='link link-primary text-white'>
+									Join us now!
+								</NavLink>
 							</h1>
 						</li>
 						<li>
