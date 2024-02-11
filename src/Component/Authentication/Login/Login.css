@@ -29,6 +29,10 @@
 	display: none;
 }
 
+.signup-password .ant-input-suffix {
+	display: block;
+}
+
 .submit-btn:hover {
 	background-color: #45484c !important;
 }

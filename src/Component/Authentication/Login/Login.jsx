@@ -18,7 +18,7 @@ const Login = () => {
 				name='basic'
 				labelCol={{
 					span: 4,
-					className: "form-label",
+					className: "form-label text-xl font-medium",
 				}}
 				style={{
 					maxWidth: 600,
@@ -67,7 +67,7 @@ const Login = () => {
 					<div className='flex justify-between items-center sm:ml-20'>
 						<p className='text-white'>
 							No Account?&nbsp;
-							<NavLink href='/register' className='text-white'>
+							<NavLink to='/signup' className='text-white'>
 								Signup here
 							</NavLink>
 						</p>
