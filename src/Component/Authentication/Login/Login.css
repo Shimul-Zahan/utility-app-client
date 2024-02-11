@@ -15,14 +15,17 @@
 	color: white;
 }
 
+.password-input {
+	background-color: #a5a5a5 !important;
+}
 .password-input:hover,
 .username-input:hover {
-	background-color: #45484c;
+	background-color: #45484c !important;
 }
 
 .username-input:focus,
 .password-input:focus-within {
-	background-color: #45484c;
+	background-color: #45484c !important;
 }
 
 .password-input .ant-input-suffix {
