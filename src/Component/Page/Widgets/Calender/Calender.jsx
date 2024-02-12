@@ -1,10 +1,11 @@
+import { Calendar as AntCalendar } from "antd";
 
-const Calender = () => {
-    return (
-        <div>
-            calender
-        </div>
-    );
+const Calendar = () => {
+	return (
+		<div>
+			<AntCalendar />
+		</div>
+	);
 };
 
-export default Calender;
+export default Calendar;
