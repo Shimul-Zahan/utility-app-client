@@ -1,6 +1,5 @@
 import { Button, Form, Input } from "antd";
 import "../Login/Login.css";
-import SocialLogin from "../SocialLogin/SocialLogin";
 
 const UpdateProfile = () => {
 	const onFinish = values => {
@@ -117,7 +116,7 @@ const UpdateProfile = () => {
 					>
 						Submit
 					</Button>
-					<SocialLogin.Google className='mt-8' title='Sign up with Google' />
+					{/* <SocialLogin.Google className='mt-8' title='Sign up with Google' /> */}
 				</div>
 			</Form>
 		</div>
