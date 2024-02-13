@@ -1,11 +1,25 @@
 import { Button, Form, Input } from "antd";
-import { NavLink } from "react-router-dom";
+import axios from "axios"; // Import axios for making HTTP requests
+import { useContext } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../../Provider/Authprovider";
+import { validateEmail } from "../../../lib/utils";
 import SocialLogin from "../SocialLogin/SocialLogin";
 import "./Login.css";
 
 const Login = () => {
-	const onFinish = values => {
-		console.log("Success:", values);
+	const { googleSignIn } = useContext(AuthContext);
+	const navigate = useNavigate();
+
+	const onFinish = async values => {
+		try {
+			const response = await axios.post("http://localhost:5000/login", values); // Send POST request to login endpoint
+			const { token } = response.data; // Extract token from response data
+			localStorage.setItem("token", token); // Store token in local storage
+			navigate("/"); // Redirect to home page after successful login
+		} catch (error) {
+			console.error("Login failed:", error.response.data.error); // Log any login errors
+		}
 	};
 
 	const onFinishFailed = errorInfo => {
@@ -35,11 +49,19 @@ const Login = () => {
 					<h2 className='uppercase text-white text-center mb-4 font-medium text-xl'>Login</h2>
 					<Form.Item
 						label='Username'
-						name='username'
+						name='email'
 						rules={[
 							{
 								required: true,
 								message: "Please input your username!",
+							},
+							{
+								validator: (rule, value) => {
+									if (!validateEmail(value)) {
+										return Promise.reject("Please input a valid email address!");
+									}
+									return Promise.resolve();
+								},
 							},
 						]}
 					>
@@ -84,7 +106,7 @@ const Login = () => {
 					>
 						Submit
 					</Button>
-					<SocialLogin.Google className='mt-5' title='Sign in with Google' />
+					<SocialLogin.Google onClick={googleSignIn} className='mt-5' title='Sign in with Google' />
 				</div>
 			</Form>
 		</div>

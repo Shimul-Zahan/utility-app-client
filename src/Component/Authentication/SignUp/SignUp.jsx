@@ -1,11 +1,25 @@
 import { Button, Form, Input } from "antd";
-import { NavLink } from "react-router-dom";
+import axios from "axios"; // Import axios for making HTTP requests
+import { NavLink, useNavigate } from "react-router-dom";
+import { validateEmail } from "../../../lib/utils";
 import "../Login/Login.css";
 import SocialLogin from "../SocialLogin/SocialLogin";
 
 const Signup = () => {
-	const onFinish = values => {
-		console.log("Success:", values);
+	const navigate = useNavigate(); // Import useNavigate hook to redirect after signup
+
+	const onFinish = async values => {
+		console.log(values);
+		try {
+			const response = await axios.post("http://localhost:5000/signup", {
+				...values,
+				role: "user",
+			}); // Send POST request to signup endpoint with role=user
+			console.log(response); // Log success message
+			navigate("/login"); // Redirect to login page after successful signup
+		} catch (error) {
+			console.error("Signup failed:", error?.response?.data?.error); // Log any signup errors
+		}
 	};
 
 	const onFinishFailed = errorInfo => {
@@ -57,6 +71,14 @@ const Signup = () => {
 							{
 								required: true,
 								message: "Please input your email!",
+							},
+							{
+								validator: (rule, value) => {
+									if (!validateEmail(value)) {
+										return Promise.reject("Please input a valid email address!");
+									}
+									return Promise.resolve();
+								},
 							},
 						]}
 					>
