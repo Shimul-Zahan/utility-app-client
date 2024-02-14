@@ -35,7 +35,7 @@ const Login = () => {
 				name='basic'
 				labelCol={{
 					span: 4,
-					className: "form-label text-xl font-medium",
+					className: "form-label text-xl font-medium flex justify-start items-center",
 				}}
 				style={{
 					maxWidth: 600,
@@ -51,12 +51,12 @@ const Login = () => {
 				<div className='bg-black w-full py-5 px-14'>
 					<h2 className='uppercase text-white text-center mb-4 font-medium text-xl'>Login</h2>
 					<Form.Item
-						label='Username'
+						label='Email'
 						name='email'
 						rules={[
 							{
 								required: true,
-								message: "Please input your username!",
+								message: "Please input your email!",
 							},
 							{
 								validator: (rule, value) => {
