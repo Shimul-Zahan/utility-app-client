@@ -1,21 +1,26 @@
 import { Button, Form, Input } from "antd";
 import axios from "axios"; // Import axios for making HTTP requests
+import { useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../../Provider/Authprovider";
 import { validateEmail } from "../../../lib/utils";
 import "../Login/Login.css";
 import SocialLogin from "../SocialLogin/SocialLogin";
 
 const Signup = () => {
+	const { createUser, googleSignIn, user } = useContext(AuthContext);
 	const navigate = useNavigate(); // Import useNavigate hook to redirect after signup
 
 	const onFinish = async values => {
-		console.log(values);
+		const { email, password } = values;
 		try {
 			const response = await axios.post("http://localhost:5000/signup", {
 				...values,
 				role: "user",
 			}); // Send POST request to signup endpoint with role=user
-			console.log(response); // Log success message
+			await createUser(email, password);
+			console.log(response);
+			console.log(user);
 			navigate("/login"); // Redirect to login page after successful signup
 		} catch (error) {
 			console.error("Signup failed:", error?.response?.data?.error); // Log any signup errors
@@ -147,7 +152,7 @@ const Signup = () => {
 					>
 						Submit
 					</Button>
-					<SocialLogin.Google className='mt-8' title='Sign up with Google' />
+					<SocialLogin.Google onClick={googleSignIn} className='mt-8' title='Sign up with Google' />
 				</div>
 			</Form>
 		</div>

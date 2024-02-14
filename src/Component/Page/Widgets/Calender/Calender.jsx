@@ -14,9 +14,6 @@ const Calendar = () => {
 				setEvents(eventData);
 			} catch (error) {
 				console.error("Error fetching events:", error);
-				// Handle API errors more gracefully:
-				// - Display a user-friendly error message to the user.
-				// - Consider retrying the fetch after a certain delay.
 			} finally {
 				setLoading(false);
 			}
