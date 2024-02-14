@@ -1,38 +1,67 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { useAllContext } from "../../../../Context/AllContext";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import { message } from "antd";
+import axios from "axios";
 
 const AddTask = () => {
   const [task, setTask] = useState("");
-  const [taskList,setTaskList] = useState([])
-  const { setAllTask } = useAllContext();
+  const [taskList, setTaskList] = useState([]);
+  const [noteData, setNoteData] = useState([]);
+  const { id } = useParams();
 
+  useEffect(() => {
+    const fetchNote = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/notes/${id}`);
+        const fetchedNoteData = response.data;
+        setNoteData(fetchedNoteData);
+      } catch (error) {
+        console.error("Error fetching note:", error);
+      }
+    };
+
+    fetchNote();
+  }, [id]);
+
+  console.log(noteData)
   const onChangeTask = (val) => {
     setTask(val);
   };
 
   const handleAddTask = () => {
     if (task.trim() !== "") {
-      // Make sure the task is not empty
-      setTaskList([...taskList, task]); // Add the new task to the existing tasks
-      setTask(""); // Clear the input field after adding the task
+      const newTaskList = [...taskList, task];
+      setTaskList(newTaskList);
+      // setTask("");
     }
   };
 
-  const handleRemoveTask = (index) => {
+  const handleRemoveTask = async (index) => {
     const updatedTasks = [...taskList];
     updatedTasks.splice(index, 1);
     setTaskList(updatedTasks);
   };
-
-  const handleSaveTask = () => {
-    setAllTask(taskList); // Update the allTask array with the taskList data
-    message.success("Task Added Successful!");
-    setTaskList([]); // Clear the taskList array
+  console.log(taskList)
+  const handleSaveTask = async () => {
+    try {
+      const updatedNote = {
+        Tasks: taskList.map((task) => ({
+          title: "",
+          task: task,
+        })),
+      };
+      console.log(updatedNote)
+      await axios.put(`http://localhost:5000/notes/task/update/${id}`, { updatedTasks: updatedNote.Tasks });
+  
+      message.success("Tasks Added Successfully!");
+      // setTaskList([]); // Clear the task list array
+    } catch (error) {
+      console.error("Error saving tasks:", error);
+      message.error("Failed to save tasks. Please try again later.");
+    }
   };
   
-  console.log(taskList);
+
   return (
     <>
       <div className="mx-20 mt-16 mb-52 ">
@@ -58,6 +87,7 @@ const AddTask = () => {
                 placeholder="Type here"
                 className="input input-bordered w-full max-w-xs"
                 onChange={(e) => onChangeTask(e.target.value)}
+                value={task} // Bind the input value to the task state
               />
             </label>
             <div className="flex justify-center items-center gap-3 mt-5">
@@ -65,12 +95,15 @@ const AddTask = () => {
                 className="btn btn-primary text-white font-semibold"
                 onClick={handleAddTask}
               >
-                Add Task +
+                Add Task
               </button>
-              <button className="btn btn-success text-white font-semibold" onClick={handleSaveTask}>
-                Save Task +
+              <button
+                className="btn btn-success text-white font-semibold"
+                onClick={handleSaveTask}
+              >
+                Save Tasks
               </button>
-              <Link to="/Notes/viewNote">
+              <Link to={`/Notes/viewNote/${id}`}>
                 <button className="btn btn-warning text-white font-semibold">
                   Return
                 </button>
@@ -79,7 +112,7 @@ const AddTask = () => {
           </div>
           <div className="ps-10 py-5">
             <h1 className="text-3xl font-bold text-center mb-3 italic">
-              All Task
+              All Tasks
             </h1>
             <ul className="mx-5">
               {taskList.map((task, index) => (
