@@ -2,6 +2,8 @@ import { Button, Form, Input } from "antd";
 import "../Login/Login.css";
 
 const UpdateProfile = () => {
+	// const { createUser } = useContext(AuthContext);
+
 	const onFinish = values => {
 		console.log("Success:", values);
 	};

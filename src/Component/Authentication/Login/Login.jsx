@@ -8,17 +8,20 @@ import SocialLogin from "../SocialLogin/SocialLogin";
 import "./Login.css";
 
 const Login = () => {
-	const { googleSignIn } = useContext(AuthContext);
+	const { googleSignIn, logIn } = useContext(AuthContext);
 	const navigate = useNavigate();
 
 	const onFinish = async values => {
+		const { email, password } = values;
+
 		try {
 			const response = await axios.post("http://localhost:5000/login", values); // Send POST request to login endpoint
 			const { token } = response.data; // Extract token from response data
 			localStorage.setItem("token", token); // Store token in local storage
+			await logIn(email, password);
 			navigate("/"); // Redirect to home page after successful login
 		} catch (error) {
-			console.error("Login failed:", error.response.data.error); // Log any login errors
+			console.error("Login failed:", error); // Log any login errors
 		}
 	};
 
@@ -32,7 +35,7 @@ const Login = () => {
 				name='basic'
 				labelCol={{
 					span: 4,
-					className: "form-label text-xl font-medium",
+					className: "form-label text-xl font-medium flex justify-start items-center",
 				}}
 				style={{
 					maxWidth: 600,
@@ -48,12 +51,12 @@ const Login = () => {
 				<div className='bg-black w-full py-5 px-14'>
 					<h2 className='uppercase text-white text-center mb-4 font-medium text-xl'>Login</h2>
 					<Form.Item
-						label='Username'
+						label='Email'
 						name='email'
 						rules={[
 							{
 								required: true,
-								message: "Please input your username!",
+								message: "Please input your email!",
 							},
 							{
 								validator: (rule, value) => {
