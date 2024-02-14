@@ -15,6 +15,9 @@ const AddTask = () => {
         const response = await axios.get(`http://localhost:5000/notes/${id}`);
         const fetchedNoteData = response.data;
         setNoteData(fetchedNoteData);
+        if (fetchedNoteData && fetchedNoteData.Tasks) {
+          setTaskList(fetchedNoteData.Tasks.map(task => task.task));
+        }
       } catch (error) {
         console.error("Error fetching note:", error);
       }

@@ -15,10 +15,6 @@ const ViewNote = () => {
         const response = await axios.get(`http://localhost:5000/notes/${id}`);
         const fetchedNoteData = response.data;
         setNoteData(fetchedNoteData);
-        // Initialize allTask with the tasks from the fetched note data
-        // if (fetchedNoteData.Tasks ) {
-        //   setAllTask(fetchedNoteData.Tasks);
-        // }
       } catch (error) {
         console.error("Error fetching note:", error);
       }
