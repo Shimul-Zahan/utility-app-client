@@ -21,30 +21,8 @@ const ViewNote = () => {
     };
 
     fetchNote();
-  }, [id]); 
+  }, [id]);
 
-  const handleUpdateBtn = async () => {
-    try {
-      const response = await axios.put(
-        `http://localhost:5000/notes/update/${id}`,
-        {
-          Title: noteData.Title,
-          Date: noteData.Date,
-          Description: noteData.Description,
-          Calendar: noteData.Calendar,
-          // Tasks: allTask,
-        }
-      );
-      if (response.status === 200) {
-        message.success("Note updated successfully!");
-        // Optionally, you can navigate to another page or update the UI
-      }
-    } catch (error) {
-      message.error("Error updating note");
-      console.error(error);
-      // Handle errors if the update fails
-    }
-  };
   const handleDeleteBtn = async () => {
     try {
       // Send a DELETE request to the server route with the note ID
@@ -82,12 +60,15 @@ const ViewNote = () => {
               <p>{noteData?.Description}</p>
             </div>
             <div className="card-actions justify-start mb-5 ms-5">
-              <button
-                className="btn btn-warning text-white"
-                onClick={handleUpdateBtn}
+              <Link
+                to={{
+                  pathname: `/Notes/updateNote/${noteData._id}`,
+                  state: { from: "/Notes/viewNote" },
+                }}
               >
-                Update
-              </button>
+                <button className="btn btn-warning text-white">Update</button>
+              </Link>
+
               <button
                 className="btn btn-error text-white"
                 onClick={handleDeleteBtn}
@@ -100,7 +81,7 @@ const ViewNote = () => {
             <div className="card-body">
               <h2 className="text-xl font-bold">Tasks:</h2>
               <ul style={{ listStyle: "circle" }} className="ml-5">
-                {noteData?.Tasks?.map((val,index ) => (
+                {noteData?.Tasks?.map((val, index) => (
                   <li key={index}>{val.task}</li>
                 ))}
               </ul>

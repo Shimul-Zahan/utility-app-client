@@ -20,7 +20,6 @@ const Note = () => {
   }, [allNotes]);
 
   const handleDeleteBtn = async (id) => {
-    console.log(id)
     try {
       // Send a DELETE request to the server route with the note ID
       const response = await axios.delete(`http://localhost:5000/notes/${id}`);
@@ -60,9 +59,15 @@ const Note = () => {
                 <Link to={`/Notes/viewNote/${note._id}`}>
                   <button className="btn btn-primary text-white">View</button>
                 </Link>
-                <Link to="">
-                  <button className="btn btn-warning text-white">Update</button>
+                <Link
+                  to={{
+                    pathname: `/Notes/updateNote/${note._id}`,
+                    state: { from: "/Notes" },
+                  }}
+                >
+                  <button className="btn btn-warning text-white">Edit</button>
                 </Link>
+
                 <button
                   className="btn btn-error text-white"
                   onClick={() => handleDeleteBtn(note._id)}

@@ -8,17 +8,14 @@ import SocialLogin from "../SocialLogin/SocialLogin";
 import "./Login.css";
 
 const Login = () => {
-	const { googleSignIn, logIn } = useContext(AuthContext);
+	const { googleSignIn } = useContext(AuthContext);
 	const navigate = useNavigate();
 
 	const onFinish = async values => {
-		const { email, password } = values;
-
 		try {
 			const response = await axios.post("http://localhost:5000/login", values); // Send POST request to login endpoint
 			const { token } = response.data; // Extract token from response data
 			localStorage.setItem("token", token); // Store token in local storage
-			await logIn(email, password);
 			navigate("/"); // Redirect to home page after successful login
 		} catch (error) {
 			console.error("Login failed:", error); // Log any login errors

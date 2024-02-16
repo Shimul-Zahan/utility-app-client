@@ -8,22 +8,26 @@ import "../Login/Login.css";
 import SocialLogin from "../SocialLogin/SocialLogin";
 
 const Signup = () => {
-	const { createUser, googleSignIn, user } = useContext(AuthContext);
+	const {  googleSignIn } = useContext(AuthContext);
 	const navigate = useNavigate(); // Import useNavigate hook to redirect after signup
 
 	const onFinish = async values => {
-		const { email, password } = values;
+		// const { email, password } = values;
+		const defaultUser = {
+			role: "user",
+		};
+	
+		const userData = {
+			...defaultUser,
+			...values, // Spread form input values to override defaultUser values
+		};
 		try {
-			const response = await axios.post("http://localhost:5000/signup", {
-				...values,
-				role: "user",
-			}); // Send POST request to signup endpoint with role=user
-			await createUser(email, password);
+			const response = await axios.post("http://localhost:5000/signup", userData);
 			console.log(response);
-			console.log(user);
-			navigate("/login"); // Redirect to login page after successful signup
+			console.log(userData);
+			navigate("/login");
 		} catch (error) {
-			console.error("Signup failed:", error?.response?.data?.error); // Log any signup errors
+			console.error("Signup failed:", error?.response?.data?.error);
 		}
 	};
 

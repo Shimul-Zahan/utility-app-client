@@ -1,52 +1,91 @@
+import { useContext, useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { AuthContext } from "../../Provider/Authprovider";
+import axios from "axios";
 
 const Navbar = () => {
-	return (
-		<div>
-			<div className='navbar bg-black text-white px-10'>
-				<div className='flex-1'>
-					<Link to='/' className='btn btn-ghost text-xl'>
-						LOGO
-					</Link>
-				</div>
-				<div className='flex-none '>
-					<ul className='menu menu-horizontal px-1'>
-						<li>
-							<h1 className='italic'>
-								Login
-								<NavLink to='/login' className='link link-primary text-white'>
-									here!
-								</NavLink>
-								Not yet a member?
-								<NavLink to='/signup' className='link link-primary text-white'>
-									Join us now!
-								</NavLink>
-							</h1>
-						</li>
-						<li>
-							<details>
-								<summary>MENU</summary>
-								<ul className='p-3 bg-slate-500 rounded-t-none'>
-									<li>
-										<Link to='/calendar'>Calender</Link>
-									</li>
-									<li>
-										<Link to='/Notes'>Notes</Link>
-									</li>
-									<li>
-										<Link to='/pdfConverter'>Converter</Link>
-									</li>
-								</ul>
-							</details>
-						</li>
-						<li>
-							<Link to='/widgets'>WIDGETS</Link>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</div>
-	);
+  const { user } = useContext(AuthContext);
+  const [allUser, setAllUser] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
+  useEffect(() => {
+    // Function to fetch all users from the server
+    const fetchAllUsers = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/user");
+        setAllUser(response.data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+    // Call the fetchAllUsers function when the component mounts
+    fetchAllUsers();
+  }, []); // Empty dependency array ensures that this effect runs only once, on component mount
+
+  useEffect(() => {
+    if (user) {
+      const foundUser = allUser.find((u) => u.email === user.email);
+      setCurrentUser(foundUser);
+    }
+  }, [user]);
+
+  console.log(user);
+  console.log(currentUser);
+  return (
+    <div>
+      <div className="navbar bg-black text-white md:px-10">
+        <div className="flex-1">
+          <Link to="/" className="btn btn-ghost text-xl">
+            LOGO
+          </Link>
+        </div>
+        <div className="flex-none ">
+          <ul className="menu menu-horizontal md:px-1">
+            {!user && (
+              <li>
+                <h1 className="italic">
+                  Login
+                  <NavLink to="/login" className="link link-primary text-white">
+                    here!
+                  </NavLink>
+                  Not yet a member?
+                  <NavLink
+                    to="/signup"
+                    className="link link-primary text-white"
+                  >
+                    Join us now!
+                  </NavLink>
+                </h1>
+              </li>
+            )}
+            <li>
+              <details>
+                <summary>MENU</summary>
+                <ul className="p-3 bg-slate-500 rounded-t-none">
+                  <li>
+                    <Link to="/calendar">Calender</Link>
+                  </li>
+                  <li>
+                    <Link to="/Notes">Notes</Link>
+                  </li>
+                  <li>
+                    <Link to="/pdfConverter">Converter</Link>
+                  </li>
+                </ul>
+              </details>
+            </li>
+            <li>
+              <Link to="/widgets">WIDGETS</Link>
+            </li>
+            {user && (
+              <li>
+                <Link to="/updateProfile">ACCOUNT</Link>
+              </li>
+            )}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Navbar;
