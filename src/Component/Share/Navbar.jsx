@@ -4,32 +4,30 @@ import { AuthContext } from "../../Provider/Authprovider";
 import axios from "axios";
 
 const Navbar = () => {
-  const { user } = useContext(AuthContext);
-  const [allUser, setAllUser] = useState([]);
+  const { user, logOut } = useContext(AuthContext);
   const [currentUser, setCurrentUser] = useState(null);
   useEffect(() => {
     // Function to fetch all users from the server
     const fetchAllUsers = async () => {
       try {
         const response = await axios.get("http://localhost:5000/user");
-        setAllUser(response.data);
+        const Data = response.data;
+        const foundUser = Data.find((u) => u.email === user.email);
+        setCurrentUser(foundUser);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
     };
     // Call the fetchAllUsers function when the component mounts
     fetchAllUsers();
-  }, []); // Empty dependency array ensures that this effect runs only once, on component mount
+  }, [user]); // Empty dependency array ensures that this effect runs only once, on component mount
 
-  useEffect(() => {
-    if (user) {
-      const foundUser = allUser.find((u) => u.email === user.email);
-      setCurrentUser(foundUser);
-    }
-  }, [user]);
+  const handleLogOut = () => {
+    logOut();
+  };
 
   console.log(user);
-  console.log(currentUser);
+  console.log(currentUser?.role);
   return (
     <div>
       <div className="navbar bg-black text-white md:px-10">
@@ -77,9 +75,27 @@ const Navbar = () => {
               <Link to="/widgets">WIDGETS</Link>
             </li>
             {user && (
-              <li>
-                <Link to="/updateProfile">ACCOUNT</Link>
-              </li>
+              <>
+                {user && currentUser && currentUser.role === "user" && (
+                  <li>
+                    <Link
+                      to={`/updateProfile/${currentUser?.email}`} // Pass current user's email as URL parameter
+                    >
+                      ACCOUNT
+                    </Link>
+                  </li>
+                )}
+                {currentUser && currentUser.role === "admin" && (
+                  <li>
+                    <Link to="/adminPage">DASHBOARD</Link>
+                  </li>
+                )}
+                <li>
+                  <Link to="/" onClick={handleLogOut}>
+                    LOGOUT
+                  </Link>
+                </li>
+              </>
             )}
           </ul>
         </div>

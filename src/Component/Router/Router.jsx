@@ -14,6 +14,7 @@ import ViewNote from "../Page/Widgets/Note/ViewNote/ViewNote";
 import Widgets from "../Page/Widgets/Widgets";
 import Navbar from "../Share/Navbar";
 import UpdateNote from "../Page/Widgets/Note/UpdateNote/UpdateNote";
+import PrivateRoute from "./PrivateRoute";
 
 export const router = createBrowserRouter([
   {
@@ -37,8 +38,8 @@ export const router = createBrowserRouter([
         element: <Navbar />,
       },
       {
-        path: "/updateProfile",
-        element: <UpdateProfile />,
+        path:"/updateProfile/:email",
+        element: <PrivateRoute><UpdateProfile /></PrivateRoute>,
       },
       {
         path: "/widgets",
@@ -74,7 +75,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/adminpage",
-        element: <AdminPage />,
+        element: <PrivateRoute><AdminPage /></PrivateRoute>,
       },
     ],
   },

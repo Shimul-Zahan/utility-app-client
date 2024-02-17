@@ -1,10 +1,9 @@
   import { Checkbox, DatePicker, Form, Input, message } from "antd";
-  import Lottie from "lottie-react";
-  import addUser from "../../../../../assets/addUser.json";
+  import Lottie from "lottie-react";  
   import { Link } from "react-router-dom";
   import { useState } from "react";
   import axios from "axios";
-
+  import addUser from "../../../../../assets/addUser.json";
   const AddNote = () => {
     const [selectedDate, setSelectedDate] = useState("");
 
