@@ -1,27 +1,49 @@
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, message } from "antd";
 import axios from "axios"; // Import axios for making HTTP requests
-import { useContext } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { NavLink, useLocation, useNavigate, useNavigation } from "react-router-dom";
 import { AuthContext } from "../../../Provider/Authprovider";
 import { validateEmail } from "../../../lib/utils";
 import SocialLogin from "../SocialLogin/SocialLogin";
 import "./Login.css";
 
 const Login = () => {
-	const { googleSignIn, logIn } = useContext(AuthContext);
+	const { googleSignIn, setUser, login } = useContext(AuthContext);
 	const navigate = useNavigate();
+	const navigation = useNavigation();
+	const location = useLocation();
+	const from = location.state?.from?.pathname || "/";
+	const [allUser, setAllUser] = useState([]);
 
-	const onFinish = async values => {
-		const { email, password } = values;
+	useEffect(() => {
+		// Function to fetch all users from the server
+		const fetchAllUsers = async () => {
+			try {
+				const response = await axios.get("http://localhost:5000/user");
+				setAllUser(response.data);
+			} catch (error) {
+				console.error("Error fetching users:", error);
+			}
+		};
 
+		fetchAllUsers();
+	}, []);
+
+	if (navigation.state === "loading") {
+		return <progress className='progress w-56'></progress>;
+	}
+
+	const onFinish = async ({ email, password }) => {
 		try {
-			const response = await axios.post("http://localhost:5000/login", values); // Send POST request to login endpoint
-			const { token } = response.data; // Extract token from response data
-			localStorage.setItem("token", token); // Store token in local storage
-			await logIn(email, password);
-			navigate("/"); // Redirect to home page after successful login
+			login(email, password);
+
+			const foundUser = allUser.find(u => u.email === email);
+			setUser(foundUser);
+
+			message.success("Login successful");
+			navigate("/");
 		} catch (error) {
-			console.error("Login failed:", error); // Log any login errors
+			console.error("Login failed:", error);
 		}
 	};
 
@@ -29,6 +51,35 @@ const Login = () => {
 		console.log("Failed:", errorInfo);
 	};
 
+	const handleGoogle = () => {
+		googleSignIn()
+			.then(result => {
+				const user = result.user;
+				const saveUser = {
+					username: user.displayName,
+					email: user.email,
+					role: "user",
+					password: "",
+				};
+
+				axios
+					.post("http://localhost:5000/user", saveUser, {
+						headers: {
+							"Content-Type": "application/json",
+						},
+					})
+					.then(() => {
+						message.success("Login successful"); // Display success message
+						navigate(from, { replace: true });
+					})
+					.catch(error => {
+						console.error("Error posting user data:", error);
+					});
+			})
+			.catch(error => {
+				console.error("Google sign-in error:", error.message);
+			});
+	};
 	return (
 		<div className='h-[calc(100vh-120px)] flex justify-center items-center overflow-auto'>
 			<Form
@@ -109,7 +160,7 @@ const Login = () => {
 					>
 						Submit
 					</Button>
-					<SocialLogin.Google onClick={googleSignIn} className='mt-5' title='Sign in with Google' />
+					<SocialLogin.Google onClick={handleGoogle} className='mt-5' title='Sign in with Google' />
 				</div>
 			</Form>
 		</div>

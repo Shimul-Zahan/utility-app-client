@@ -1,75 +1,27 @@
 import { Calendar as AntCalendar, Badge } from "antd";
 import { useEffect, useState } from "react";
 
-const data = [
+const mockData = [
 	{
+		date: "2024-02-15", // Assuming "date" property for event date
 		type: "warning",
 		content: "Meeting with clients",
 	},
 	{
+		date: "2024-02-20",
 		type: "success",
 		content: "Team lunch",
 	},
-	{
-		type: "warning",
-		content: "Project deadline",
-	},
-	{
-		type: "error",
-		content: "Doctor's appointment",
-	},
-	{
-		type: "success",
-		content: "Product demo",
-	},
-	{
-		type: "error",
-		content: "Call with investors",
-	},
-	{
-		type: "warning",
-		content: "Training session",
-	},
-	{
-		type: "success",
-		content: "Marketing campaign launch",
-	},
-	{
-		type: "warning",
-		content: "Budget review meeting",
-	},
-	{
-		type: "success",
-		content: "Client presentation",
-	},
 ];
 
-const getListData = (value, fetchEventCallback) => {
-	// If data has already been fetched for this date, return it from cache
-	const cachedData = JSON.parse(localStorage.getItem(value.format("YYYY-MM-DD")));
-	if (cachedData) return cachedData;
-
-	// Otherwise, fetch event data from the server
-	fetchEventCallback(value)
-		.then(response => response.json()) // Assuming your API returns JSON data
-		.then(data => {
-			// Process and transform the server data
-			const processedData = data.map(item => ({
-				type: item.type || "success", // Set default type if not provided
-				content: item.content,
-			}));
-			// Cache the fetched data for future renders
-			localStorage.setItem(value.format("YYYY-MM-DD"), JSON.stringify(processedData));
-			return processedData;
-		})
-		.catch(error => {
-			console.error("Error fetching event data:", error);
-			return []; // Return empty array on error to avoid rendering issues
-		});
+const getListData = value => {
+	// No more API call as fake data is used
+	const matchingEvents = mockData.filter(event => event.date === value);
+	return matchingEvents;
 };
 
 const getMonthData = value => {
-	// Implement your logic to fetch or calculate the backlog number for the month
+	// ... Implement your logic to fetch or calculate the backlog number for the month
 	// using your server API or local data, adjusting the approach based on your data storage
 	// and retrieval methods.
 	// ...
@@ -79,17 +31,15 @@ const Calendar = () => {
 	const [selectedDate, setSelectedDate] = useState(null);
 	const [eventData, setEventData] = useState([]);
 
-	// Function to handle server-side API call for event data
-	const fetchEventCallback = async date => {
-		const response = await fetch(`/api/events/${date.format("YYYY-MM-DD")}`); // Adapt the URL to your API endpoint
-		return response;
-	};
-
+	// Find days with events and update eventData using useEffect
 	useEffect(() => {
-		if (selectedDate) {
-			getListData(selectedDate, fetchEventCallback).then(data => setEventData(data));
-		}
-	}, [selectedDate]);
+		const datesWithEvents = mockData.map(event => event.date);
+		const initialEventData = datesWithEvents.map(date => ({
+			date,
+			events: getListData(new Date(date)), // Convert string to Date
+		}));
+		setEventData(initialEventData);
+	}, []);
 
 	const monthCellRender = value => {
 		const num = getMonthData(value);
@@ -102,9 +52,10 @@ const Calendar = () => {
 	};
 
 	const dateCellRender = value => {
+		const matchingEvents = eventData.find(day => day.date === value)?.events || [];
 		return (
 			<ul className='events'>
-				{eventData.map(item => (
+				{matchingEvents.map(item => (
 					<li key={item.content}>
 						<Badge status={item.type} text={item.content} />
 					</li>
