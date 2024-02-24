@@ -4,31 +4,27 @@ import { Link, NavLink } from "react-router-dom";
 import { AuthContext } from "../../Provider/Authprovider";
 
 const Navbar = () => {
-	const { user, logOut } = useContext(AuthContext);
-	const [currentUser, setCurrentUser] = useState(null);
+	const { logOut, loading } = useContext(AuthContext);
+	const { user } = useContext(AuthContext);
 
 	useEffect(() => {
-		// Function to fetch all users from the server
-		const fetchAllUsers = async () => {
-			try {
-				const response = await axios.get("http://localhost:5000/user");
-				const Data = response.data;
-				const foundUser = Data.find(u => u.email === user.email);
-				setCurrentUser(foundUser);
-			} catch (error) {
-				console.error("Error fetching users:", error);
-			}
-		};
-		// Call the fetchAllUsers function when the component mounts
-		fetchAllUsers();
-	}, [user]); // Empty dependency array ensures that this effect runs only once, on component mount
+		if (user !== null && !loading) {
+			console.log(user?.email);
+		}
+	}, [user, loading]);
 
 	const handleLogOut = () => {
 		logOut();
 	};
 
-	console.log(user);
-	console.log(currentUser?.role);
+	if (loading) {
+		console.log(loading);
+		return <div>Loading....</div>
+	}
+
+	console.log(user && user.email);
+
+
 	return (
 		<div>
 			<div className='navbar bg-black text-white md:px-10'>
@@ -72,18 +68,18 @@ const Navbar = () => {
 						<li>
 							<Link to='/widgets'>WIDGETS</Link>
 						</li>
-						{user && (
+						{user && user.auth && (
 							<>
-								{user && currentUser && currentUser.role === "user" && (
+								{user && user?.role === "user" && (
 									<li>
 										<Link
-											to={`/updateProfile/${currentUser?.email}`} // Pass current user's email as URL parameter
+											to={`/updateProfile/${user?.email}`} // Pass current user's email as URL parameter
 										>
 											ACCOUNT
 										</Link>
 									</li>
 								)}
-								{currentUser && currentUser.role === "admin" && (
+								{user && user?.role === "admin" && (
 									<li>
 										<Link to='/adminPage'>DASHBOARD</Link>
 									</li>

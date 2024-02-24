@@ -8,15 +8,17 @@ import {
 } from "firebase/auth";
 import { createContext, useEffect, useState } from "react";
 import { app } from "../firebase/firebase.config";
+import { useNavigate } from 'react-router-dom';
 
 export const AuthContext = createContext(null);
 
 const auth = getAuth(app);
 
+
 // eslint-disable-next-line react/prop-types
 const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState(null);
-	const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(false);
 
 	const googleProvider = new GoogleAuthProvider();
 
@@ -26,25 +28,20 @@ const AuthProvider = ({ children }) => {
 	};
 
 	useEffect(() => {
-		// Check if user is logged in
-		const token = localStorage.getItem("token");
-		if (token) {
-			// Verify token on the server
-			axios
-				.post("http://localhost:5000/verifyToken", { token })
-				.then(() => {
-					setUser({ token });
-				})
-				.catch(() => {
-					localStorage.removeItem("token");
-				})
-				.finally(() => {
-					setLoading(false);
-				});
-		} else {
+		const fetchUserFromLocalStorage = () => {
+			setLoading(true);
+			const storedUser = localStorage.getItem('loginUser');
+			const loggedUser = JSON.parse(storedUser);
+
+			if (storedUser) {
+				setUser(loggedUser);
+			}
+
 			setLoading(false);
-		}
+		};
+		fetchUserFromLocalStorage();
 	}, []);
+
 
 	const logOut = () => {
 		setLoading(true);
@@ -64,35 +61,17 @@ const AuthProvider = ({ children }) => {
 	const login = async (email, password) => {
 		try {
 			const response = await axios.post("http://localhost:5000/login", { email, password });
-			const { token } = response.data;
-			// Store token in local storage
-			localStorage.setItem("access-token", token);
-			setUser({ token });
+			const user = response.data;
+			console.log('user', user);
+
+			localStorage.setItem("loginUser", JSON.stringify(user));
+			window.location.reload();
+
 		} catch (error) {
 			console.error("Login failed:", error);
 		}
 	};
 
-	useEffect(() => {
-		const unsubscribe = onAuthStateChanged(auth, currentUser => {
-			setUser(currentUser);
-			// if (currentUser) {
-			//   axios
-			//     .post("http://localhost:5000/jwt", {
-			//       email: currentUser.email,
-			//     })
-			//     .then((data) => {
-			//       localStorage.setItem("access-token", data.data.token);
-			//       setLoading(false);
-			//     });
-			// } else {
-			//   localStorage.removeItem("access-token");
-			// }
-		});
-		return () => {
-			return unsubscribe();
-		};
-	}, []);
 
 	const authInfo = {
 		login,

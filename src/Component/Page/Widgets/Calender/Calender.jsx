@@ -1,84 +1,55 @@
-import { Calendar as AntCalendar, Badge } from "antd";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import FullCalendar from "@fullcalendar/react";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import axios from "axios";
 import { useEffect, useState } from "react";
 
-const mockData = [
-	{
-		date: "2024-02-15", // Assuming "date" property for event date
-		type: "warning",
-		content: "Meeting with clients",
-	},
-	{
-		date: "2024-02-20",
-		type: "success",
-		content: "Team lunch",
-	},
-];
-
-const getListData = value => {
-	// No more API call as fake data is used
-	const matchingEvents = mockData.filter(event => event.date === value);
-	return matchingEvents;
-};
-
-const getMonthData = value => {
-	// ... Implement your logic to fetch or calculate the backlog number for the month
-	// using your server API or local data, adjusting the approach based on your data storage
-	// and retrieval methods.
-	// ...
-};
-
 const Calendar = () => {
-	const [selectedDate, setSelectedDate] = useState(null);
-	const [eventData, setEventData] = useState([]);
+  const [allEvents, setAllEvents] = useState([]);
 
-	// Find days with events and update eventData using useEffect
-	useEffect(() => {
-		const datesWithEvents = mockData.map(event => event.date);
-		const initialEventData = datesWithEvents.map(date => ({
-			date,
-			events: getListData(new Date(date)), // Convert string to Date
-		}));
-		setEventData(initialEventData);
-	}, []);
+  useEffect(() => {
+    getEvent();
+  }, []);
+  const getEvent = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/notes");
+      if (res) {
+        res.data.map((data) => {
+          if (data.Calendar) {
+            const event = {
+              title: data.Title,
+              start: data.Date,
+              extendedProps: {
+                description: data.Description,
+                calendar: data.Calendar,
+                tasks: data.Tasks,
+              },
+            };
+            setAllEvents((prev) => [...prev, event]);
+          }
+        });
+      }
+    } catch (error) {
+      console.log("🚀 ~ getEvent ~ error:", error);
+    }
+  };
 
-	const monthCellRender = value => {
-		const num = getMonthData(value);
-		return num ? (
-			<div className='notes-month'>
-				<section>{num}</section>
-				<span>Backlog number</span>
-			</div>
-		) : null;
-	};
+  console.log(allEvents);
 
-	const dateCellRender = value => {
-		const matchingEvents = eventData.find(day => day.date === value)?.events || [];
-		return (
-			<ul className='events'>
-				{matchingEvents.map(item => (
-					<li key={item.content}>
-						<Badge status={item.type} text={item.content} />
-					</li>
-				))}
-			</ul>
-		);
-	};
-
-	const cellRender = (current, info) => {
-		if (info.type === "date") return dateCellRender(current);
-		if (info.type === "month") return monthCellRender(current);
-		return info.originNode;
-	};
-
-	const onSelect = date => {
-		setSelectedDate(date);
-	};
-
-	return (
-		<div className='mx-10 mt-8'>
-			<AntCalendar onSelect={onSelect} className='' cellRender={cellRender} />
-		</div>
-	);
+  return (
+    <div className="mx-10 mt-8">
+      <FullCalendar
+        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+        headerToolbar={{
+          left: "prev,next today",
+          center: "title",
+          right: "resourceTimelineWook, dayGridMonth,timeGridWeek",
+        }}
+        events={allEvents}
+      />
+    </div>
+  );
 };
 
 export default Calendar;
